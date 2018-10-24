@@ -1,64 +1,140 @@
-import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.robotics.SampleProvider;
-import lejos.robotics.chassis.Chassis;
-import lejos.robotics.chassis.Wheel;
-import lejos.robotics.chassis.WheeledChassis;
-import lejos.robotics.navigation.MovePilot;
 
-public class LineFollowingTest {
-	
-	public static void main (String[] argv) {
-	
-		EV3ColorSensor colorSensor;
-		SampleProvider colorProvider;
+	import lejos.hardware.Button;
+	import lejos.robotics.Color;
+	import lejos.utility.Delay;
+	import lejos.hardware.port.*;
+	import lejos.hardware.sensor.EV3TouchSensor;
+	import lejos.hardware.motor.*;
+	import lejos.robotics.SampleProvider;
+	import  lejos.robotics.chassis.Chassis; 
+	import  lejos.robotics.chassis.Wheel; 
+	import  lejos.robotics.chassis.WheeledChassis;
+	import lejos.robotics.navigation.MovePilot;
+
+	public class HSV {
 		
-		EV3LargeRegulatedMotor  LEFT_MOTOR  =  new  EV3LargeRegulatedMotor(MotorPort.A); 
-	    EV3LargeRegulatedMotor  RIGHT_MOTOR  =  new  EV3LargeRegulatedMotor(MotorPort.C);
-	   
-	    
-	     Wheel wheel1 = WheeledChassis.modelWheel(LEFT_MOTOR , 2.5).offset(-5);
-	     Wheel wheel2 = WheeledChassis.modelWheel(RIGHT_MOTOR , 2.5).offset(5);
-	      
-	     Chassis chassis = new WheeledChassis(new  Wheel[] { wheel1, wheel2 }, WheeledChassis.TYPE_DIFFERENTIAL);
-	      
-	     MovePilot pilot = new MovePilot(chassis);
-	      
-	     Port s3 = LocalEV3.get().getPort("S3"); 
-	     colorSensor = new EV3ColorSensor(s3);
-	     colorProvider = colorSensor.getColorIDMode();
-		
-		int detectedTapeColor = 0;
-		int detectedFloorColor = 0;
-		int detectedColor = 0;
-		
-		detectedTapeColor = colorSensor.getColorID(); 
-		 
-		pilot.rotate(10);
-		detectedFloorColor = colorSensor.getColorID();
-		pilot.rotate(-10);
-		
-		while (Button.ESCAPE.isUp()) {
-				
-			detectedColor = colorSensor.getColorID();
-				
-			if(detectedColor == detectedTapeColor) {
-				pilot.travel(5);
-					
+		public static double[] RGBtoHSV(Color colors){
+			double[] hsv = new double[3];
+			// read colors
+			int r = colors.getRed();
+			int b = colors.getBlue();
+			int g = colors.getGreen();
+			
+			double min = Math.min(r, Math.min(b,g));
+			double max = Math.max(r, Math.max(b, g));
+			double delta = max - min;
+			hsv[2] = max/255; //set v to max as a percentage
+			if (max != 0){
+				hsv[1] = delta/max;
 			}
-			if(detectedColor == detectedFloorColor) {
-				//turn right 5 degrees
-				pilot.rotate(-5);
-				//move forward
+			else{ //r = b = g =0 
+				hsv[1] = 0; //s = 0;		// s = 0, v is undefined
+				hsv[0] = -1; //h = -1;
+				return hsv;
 			}
+			
+			if (r == max){
+				hsv[0] = (g-b)/delta; //h 
+			}
+			else{
+				if (g == max)
+					hsv[0] = 2 + (b - r)/delta; //h
+				else
+					hsv[0] = 4 + (r - g)/delta; //h
+			}
+			
+			hsv[0] *=60;	//degrees
+			if (hsv[0] < 0)
+				hsv[0] +=360;
+			
+			return hsv;
 		}
-		
-		colorSensor.close();
-      
+
+		public static void main(String[] args) {
+			// TODO Auto-generated method stub
+			ColorSensor colorSensor = new ColorSensor(SensorPort.S3);
+			colorSensor.setRGBMode();
+			Color rgb; 
+			
+			EV3LargeRegulatedMotor motora = new EV3LargeRegulatedMotor (MotorPort.A);
+			EV3LargeRegulatedMotor motorb = new EV3LargeRegulatedMotor (MotorPort.C);
+			EV3TouchSensor touchsensor = new EV3TouchSensor (SensorPort.S2);
+			
+			Wheel wheel1 = WheeledChassis.modelWheel(motora , 2.5).offset(-5.0);
+		    Wheel wheel2 = WheeledChassis.modelWheel(motorb , 2.5).offset(5.0);
+		    
+		    Chassis chassis = new WheeledChassis(new  Wheel[] { wheel1, wheel2 }, WheeledChassis.TYPE_DIFFERENTIAL);
+			
+			
+			//is pressed method? do we need to make float values and fetching samples?
+		    MovePilot pilot = new MovePilot(chassis);
+		    
+		    Button.waitForAnyPress(); 
+		    
+			double [] hsvmiddle = new double[3];
+			double [] hsvfloor = new double [3];
+			double [] hsvline = new double [3];
+			
+			double [] pickupColor = new double [3];
+			
+			
+				rgb = colorSensor.getColor();
+				hsvmiddle= RGBtoHSV(rgb);
+				
+				pilot.rotate(10);
+				
+				rgb = colorSensor.getColor();
+				hsvfloor= RGBtoHSV(rgb);
+				
+				pilot.rotate(-20);
+				
+				rgb = colorSensor.getColor();
+				hsvline= RGBtoHSV(rgb);
+			
+			while(Button.ESCAPE.isUp())
+			{
+				rgb = colorSensor.getColor();
+				pickupColor = RGBtoHSV(rgb);
+				
+	            /*System.out.println("RGB = "+
+	                " [" + rgb.getRed() + "," + rgb.getGreen() + "," + rgb.getBlue() 
+	                +"]\n "  + "HSV = " + "[ " + hsv[0] + "," + hsv[1] + "," + hsv[2] + "," +" ]");
+				//delay a second so we don't see so many outputs on the screen
+	            //need to apply to actual line following strategy*/
+				Delay.msDelay(1000);
+				
+				pilot.forward();
+				
+				while (!Button.ESCAPE.isDown()) {
+					 if (hsv[0]<145 && hsv[0]>136) {//if (((hsvfloor[0]-5)<pickupColor[0])&&((hsvfloor[0]+5>pickupColor[0]))
+						 System.out.println("white space");
+							pilot.rotate(-10); 
+					 }
+					 
+					 else if (hsv[0]<108 && hsv[0]>100) {
+						 System.out.println("black line");
+							pilot.rotate(10);
+					}
+					 
+					 else if (hsv[0]<125 && hsv[0]>117) {
+						 System.out.println ("middle");
+						 pilot.forward();
+					 }
+			}
+				
+				//add hsv for silver end of the maze, and add red for intersections
+				
+			
+			
+				 
+			
+			//free up resources
+			colorSensor.close();
+			
+		}
+
 	}
-}
+
+
+
 
