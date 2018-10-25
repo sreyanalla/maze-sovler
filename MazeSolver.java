@@ -3,7 +3,8 @@
 	import lejos.robotics.Color;
 	import lejos.utility.Delay;
 	import lejos.hardware.port.*;
-	import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.hardware.sensor.EV3IRSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 	import lejos.hardware.motor.*;
 	import lejos.robotics.SampleProvider;
 	import  lejos.robotics.chassis.Chassis; 
@@ -59,6 +60,7 @@
 			EV3LargeRegulatedMotor motora = new EV3LargeRegulatedMotor (MotorPort.A);
 			EV3LargeRegulatedMotor motorb = new EV3LargeRegulatedMotor (MotorPort.C);
 			EV3TouchSensor touchsensor = new EV3TouchSensor (SensorPort.S2);
+			EV3IRSensor irSensor = new EV3IRSensor (SensorPort.S1);
 			
 			Wheel wheel1 = WheeledChassis.modelWheel(motora , 2.5).offset(-5.0);
 		    Wheel wheel2 = WheeledChassis.modelWheel(motorb , 2.5).offset(5.0);
@@ -108,6 +110,13 @@
 	            //need to apply to actual line following strategy*/
 				Delay.msDelay(1000);
 				
+				//touch sensor info
+				SampleProvider distance = touchsensor.getTouchMode();
+				float[] sample = new float[1];
+				
+				//ir info
+				float[] sample2 = new float[1];
+				
 				pilot.forward();
 				
 				while (!Button.ESCAPE.isDown()) {
@@ -137,13 +146,36 @@
 					  * end the maze and call the stacking method
 					 }*/
 					 
+					 
+					 //touch sensor code
+					 distance.fetchSample(sample, 0);
+						if (sample[0]== 1) {
+							
+							pilot.travel(-10);
+							pilot.rotate(-90);
+							pilot.travel(20);
+							pilot.rotate(90);
+							pilot.forward();
+						}
+						
+					//ir code
+					distance.fetchSample(sample, 0);
+						if (sample2[0]<=18) {
+							
+							pilot.travel(-10);
+							pilot.rotate(-90);
+							pilot.travel(20);
+							pilot.rotate(90);
+							pilot.forward();
+						}
+					 
 			}
 				
 				//add hsv for silver end of the maze, and add red for intersections
 				/*if the robot sees red and cannot turn to the right (ir sensor) then go straight
+				 * 	then if it cant go forward, turn around and when you get back to the red line then turn left
 				 * if the robot sees red and can turn right, then turn right
-				 * if the robot hits something in front of itself, then have the robot turn around to the left 
-				 * 		if he turns around to the right then he will be on the opposite side of the line we had him on
+				 * if the robot hits something in front of itself, then have the robot turn around to the right				
 				 * 
 				 */
 				
