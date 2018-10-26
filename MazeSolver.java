@@ -73,82 +73,55 @@ import lejos.hardware.sensor.EV3TouchSensor;
 		    
 		    Button.waitForAnyPress(); 
 		    
-			double [] hsvmiddle = new double[3];
-			double [] hsvfloor = new double [3];
-			double [] hsvline = new double [3];
+			double [] hsv = new double[3];			
 			
-			double [] pickupColor = new double [3];
-			
-			
-				rgb = colorSensor.getColor();
-				hsvmiddle= RGBtoHSV(rgb);
-				
-				//rotate to the left to pickup wood color
-				pilot.rotate(-20);
-				
-				rgb = colorSensor.getColor();
-				hsvfloor= RGBtoHSV(rgb);
-				
-				//rotate to the right to pick up black line
-				pilot.rotate(30);
-				
-				rgb = colorSensor.getColor();
-				hsvline= RGBtoHSV(rgb);
-				
-				//rotate back to center
-				pilot.rotate(-10);
-			
-			while(Button.ESCAPE.isUp())
-			{
-				rgb = colorSensor.getColor();
-				pickupColor = RGBtoHSV(rgb);
-				
-	            /*System.out.println("RGB = "+
-	                " [" + rgb.getRed() + "," + rgb.getGreen() + "," + rgb.getBlue() 
-	                +"]\n "  + "HSV = " + "[ " + hsv[0] + "," + hsv[1] + "," + hsv[2] + "," +" ]");
-				//delay a second so we don't see so many outputs on the screen
-	            //need to apply to actual line following strategy*/
-				Delay.msDelay(1000);
-				
-				//touch sensor info
-				SampleProvider distance = touchsensor.getTouchMode();
-				float[] sample = new float[1];
-				
-				//ir info
-				float[] sample2 = new float[1];
-				
-				pilot.forward();
 				
 				while (!Button.ESCAPE.isDown()) {
+					//System.out.println ("starting while loop");
+					rgb = colorSensor.getColor();
+					hsv= RGBtoHSV(rgb);
+					
+		            //System.out.println("RGB = "+
+		               // " [" + rgb.getRed() + "," + rgb.getGreen() + "," + rgb.getBlue() 
+		               // +"]\n "  + "HSV = " + "[ " + hsv[0] + "," + hsv[1] + "," + hsv[2] + "," +" ]");
+					//delay a second so we don't see so many outputs on the screen
+		            //need to apply to actual line following strategy
+					Delay.msDelay(1000);
+				
 					//when the robot is on the wood it will rotate and fix itself back on the middle
-					 if ((((hsvfloor[0]-5)<pickupColor[0])&&((hsvfloor[0]+5>pickupColor[0])))) { 
+					 if ((hsv[0]>30)&&(hsv[0]<49)) { 
 						 System.out.println("floor");
-							pilot.rotate(-4); 
+							pilot.rotate(-5); 
+							
 					 }
 					 //when the robot is on black it will rotate and fix its self back on the middle
-					 else if ((((hsvline[0]-5)<pickupColor[0])&&((hsvline[0]+5>pickupColor[0])))) {
+					 else if ((hsv[0]>149)&&(hsv[0]<210)) {
 						 System.out.println("black line");
-							pilot.rotate(4);
+							pilot.rotate(5);
+							
 					}
 					 //when the robot is in the middle, it will go forward
-					 else if ((((hsvmiddle[0]-5)<pickupColor[0])&&((hsvmiddle[0]+5>pickupColor[0])))) {
+					 else if ((hsv[0]>50)&&(hsv[0]<109)) {
 						 System.out.println ("middle");
-						 pilot.forward();
+						 pilot.travel(5);
+					 }
+					 else {
+						 System.out.println (hsv[0]);
 					 }
 					 
 					 //need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
-					 /*else if ((((hsvred[0]-5)<pickupColor[0])&&((hsvred[0]+5>pickupColor[0])))) {
+					 /*else if ((hsv[0]>7)&&(hsv[0]<11)) {
 						 pilot.forward(); ??
 					 }*/
 					 
 					 //when the robot sees silver, then it should recognize that it is at the end of the maze and call to the stacking method to retrace its steps
-					 /*else if ((hsvsilver[0]-5<pickupcolor[0])&&(hsvsilver[0]+5<pickupcolor[0])){
-					  * end the maze and call the stacking method
+					 /*else if ((hvs[0]>110)&&(hsv[0]<135)){ SILVER
+					  * 
 					 }*/
 					 
 					 
 					 //touch sensor code
-					 distance.fetchSample(sample, 0);
+					 /*distance.fetchSample(sample, 0);
 						if (sample[0]== 1) {
 							
 							pilot.travel(-10);
@@ -167,7 +140,7 @@ import lejos.hardware.sensor.EV3TouchSensor;
 							pilot.travel(20);
 							pilot.rotate(90);
 							pilot.forward();
-						}
+						}*/
 					 
 			}
 				
@@ -189,6 +162,6 @@ import lejos.hardware.sensor.EV3TouchSensor;
 		}
 
 	}
-	}
+	
 
 
