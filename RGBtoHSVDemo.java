@@ -71,36 +71,25 @@
 		    
 		    Button.waitForAnyPress(); 
 		    
-			double [] hsvmiddle = new double[3];
-			double [] hsvfloor = new double [3];
-			double [] hsvline = new double [3];
-			
+			double [] hsv = new double[3];
+
 			double [] pickupColor = new double [3];
 			
 			
 				rgb = colorSensor.getColor();
-				hsvmiddle= RGBtoHSV(rgb);
-				
-				pilot.rotate(10);
-				
-				rgb = colorSensor.getColor();
-				hsvfloor= RGBtoHSV(rgb);
-				
-				pilot.rotate(-20);
-				
-				rgb = colorSensor.getColor();
-				hsvline= RGBtoHSV(rgb);
+				hsv= RGBtoHSV(rgb);
+
 			
 			while(Button.ESCAPE.isUp())
 			{
 				rgb = colorSensor.getColor();
 				pickupColor = RGBtoHSV(rgb);
 				
-	            /*System.out.println("RGB = "+
+	            System.out.println("RGB = "+
 	                " [" + rgb.getRed() + "," + rgb.getGreen() + "," + rgb.getBlue() 
 	                +"]\n "  + "HSV = " + "[ " + hsv[0] + "," + hsv[1] + "," + hsv[2] + "," +" ]");
 				//delay a second so we don't see so many outputs on the screen
-	            //need to apply to actual line following strategy*/
+	            //need to apply to actual line following strategy
 				Delay.msDelay(1000);
 				
 				pilot.forward();
@@ -108,20 +97,20 @@
 				while (!Button.ESCAPE.isDown()) {
 					 if (hsv[0]<145 && hsv[0]>136) {//if (((hsvfloor[0]-5)<pickupColor[0])&&((hsvfloor[0]+5>pickupColor[0]))
 						 System.out.println("white space");
-							pilot.rotate(-10); 
 					 }
 					 
-					 else if (hsv[0]<108 && hsv[0]>100) {
+					 else if (hsv[0]<150 && hsv[0]>100) {
 						 System.out.println("black line");
-							pilot.rotate(10);
 					}
 					 
 					 else if (hsv[0]<125 && hsv[0]>117) {
 						 System.out.println ("middle");
-						 pilot.forward();
 					 }
 			}
 				
+            //also find out what the red and silver colors are the values you should be changing are the ranges of values
+            //so if black is between 100-150 for example the "black line code above would look as such
+            
 				//add hsv for silver end of the maze, and add red for intersections
 				
 			
