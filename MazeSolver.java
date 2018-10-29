@@ -109,7 +109,7 @@ import lejos.hardware.sensor.EV3TouchSensor;
 						 System.out.println (hsv[0]);
 					 }
 					 
-					 //need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
+					 //need to implement when the robot sees a new color (red) then it will follow the intersection strategy
 					 else if ((hsv[0]>7)&&(hsv[0]<11)) {//red
 						 
                      //ir code activated
@@ -118,14 +118,16 @@ import lejos.hardware.sensor.EV3TouchSensor;
                               //do not turn
                               //put another statements saying if its NOT activated
                               //if its  not activated then turn right over intersections
+                              pilot.rotate(-90);
       						}
+                        
+                        else {
+                            pilot.travel(5);
+                        }
+
                    
 					 }
-                
-                 //if (touch is pressed) {
-                     //pilot.rotate(180); //turn all the way around
-                     //pilot.forward();  
-                  //} when the touch sensor is pressed
+
 					 
 					 //when the robot sees silver, then it should recognize that it is at the end of the maze and call to the stacking method to retrace its steps
 					 /*else if ((hvs[0]>110)&&(hsv[0]<135)){ SILVER
@@ -145,6 +147,10 @@ import lejos.hardware.sensor.EV3TouchSensor;
 						}
 						
 					*/
+                 //if (touch is pressed) {
+                     //pilot.rotate(180); //turn all the way around
+                     //pilot.forward();  
+                  //} when the touch sensor is pressed
 					 
 			}
 				
