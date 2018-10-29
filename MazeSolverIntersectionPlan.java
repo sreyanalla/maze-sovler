@@ -138,7 +138,19 @@
 					 
 					 //need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
 					 /*else if ((((hsvred[0]-5)<pickupColor[0])&&((hsvred[0]+5>pickupColor[0])))) {
-						 pilot.forward(); ??
+						 
+                   //touch sensor code
+					 distance.fetchSample(sample, 0);
+						if (sample[0]== 1) {
+							
+							//pilot.travel(-10);
+							//pilot.rotate(-90);
+							//pilot.travel(20);
+							//pilot.rotate(90);
+							//pilot.forward();
+						}
+
+                   
 					 }*/
 					 
 					 //when the robot sees silver, then it should recognize that it is at the end of the maze and call to the stacking method to retrace its steps
@@ -146,18 +158,7 @@
 					  * end the maze and call the stacking method
 					 }*/
 					 
-					 
-					 //touch sensor code
-					 distance.fetchSample(sample, 0);
-						if (sample[0]== 1) {
-							
-							pilot.travel(-10);
-							pilot.rotate(-90);
-							pilot.travel(20);
-							pilot.rotate(90);
-							pilot.forward();
-						}
-						
+					 						
 					//ir code
 					distance.fetchSample(sample, 0);
 						if (sample2[0]<=18) {
