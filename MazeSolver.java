@@ -1,10 +1,23 @@
+/* group: the beet farm
+   robot name: dwight
+
+   group members:
+   callie balut (team leader)
+   sreya nalla
+   jackie fine
+   allison forsyth
+   sydney kleingartner
+   
+   date of project presentation:
+   november 8th, 2018
+*/
 
 	import lejos.hardware.Button;
 	import lejos.robotics.Color;
 	import lejos.utility.Delay;
 	import lejos.hardware.port.*;
-import lejos.hardware.sensor.EV3IRSensor;
-import lejos.hardware.sensor.EV3TouchSensor;
+   import lejos.hardware.sensor.EV3IRSensor;
+   import lejos.hardware.sensor.EV3TouchSensor;
 	import lejos.hardware.motor.*;
 	import lejos.robotics.SampleProvider;
 	import  lejos.robotics.chassis.Chassis; 
@@ -114,18 +127,15 @@ import lejos.hardware.sensor.EV3TouchSensor;
 						 
                      //ir code activated
       					distance.fetchSample(sample, 0);
-      						if (sample2[0]<=18) {
+      					if (sample2[0]<=18) {
                               //do not turn
-                              //put another statements saying if its NOT activated
+                              //put another statements saying if it's NOT activated
                               //if its  not activated then turn right over intersections
                               pilot.rotate(-90);
-      						}
-                        
-                        else {
+      					}   
+                     else {
                             pilot.travel(5);
-                        }
-
-                   
+                     }
 					 }
 
 					 
@@ -162,8 +172,27 @@ import lejos.hardware.sensor.EV3TouchSensor;
 				 * 
 				 */
 				
-			
-			
+            //assign int values to movements of the robots
+            //goal: push these values to the stack to be able to switch when the robot is going back
+            //moving forward (0) would not switch when coming back
+            //int 0 = robot.forward();
+            //moving left (1) would switch to moving right (2) when the robot is going back
+            //int 1 = robot.rotate(-90);
+            //moving right (2) would switch to moving left(1) when the robot is going back
+            
+            //after a sequence (movement between intersections) is completed:
+            //either a 0 (forward), 1 (left), or 2 (right) is pushed to the stack
+            //if the touch sensor was pressed, that sequence is popped off the stack
+            //when the maze is completed (the silver color is picked up by the color sensor)
+            //1's would be switched to 2's, 2's would be switched to 1's, and 0's would stay the same
+            
+            
+            //find a way to know where the robot came from
+            //ideas: 
+            //if a dead end is reached (touch sensor is pressed), that sequence is popped off the stack
+               //the robot assigns a number or value (maybe we should do a letter like a, b, and so on?) to each intersection
+               //with this, if the robot came back to intersection a (for example), a would again be printed on the screen
+               //is there a way to store these values? look into this
 				 
 			
 			//free up resources
