@@ -4,8 +4,8 @@
 		import lejos.hardware.port.*;
 	   import lejos.hardware.sensor.EV3IRSensor;
 	   import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.SensorMode;
-import lejos.hardware.motor.*;
+      import lejos.hardware.sensor.SensorMode;
+      import lejos.hardware.motor.*;
 		import lejos.robotics.SampleProvider;
 		import  lejos.robotics.chassis.Chassis; 
 		import  lejos.robotics.chassis.Wheel; 
@@ -96,9 +96,20 @@ public class MazeSolver {
 			    
 			    Button.waitForAnyPress(); 
 			    
-				double [] hsv = new double[3];	
-				boolean touched = false;
+				 double [] hsv = new double[3];	
+				  boolean touched = false;
 				
+             Stack<String> stack = new Stack<String>();
+             //created a new stack called stack
+             //used later at intersections
+             
+             boolean touched = false; 
+             //check this later
+             //initialize the boolean touched variable to either true or false
+             //does it matter which?
+             
+             int x;
+             //initializing variable x that will store the top of the stack
 					
 					while (!Button.ESCAPE.isDown()) {
 						//System.out.println ("starting while loop");
@@ -142,6 +153,30 @@ public class MazeSolver {
 							 System.out.println ("middle");
 							 pilot.travel(5);
 						 }
+                   
+                   else if () { //if the color detected is equal to the color of the silver box (ending indicator)
+                     //may need to use ambient light mode
+                     //when color reaches the foil (silver)
+                        //then indicate that the robot should executing what's stacked
+                     
+                     //go through the stack but SWITCHED
+                     //add another boolean variable (mazeSolved) -> indicated maze has now been solved
+                     
+                     //use line following
+                     //structure:
+                     //if (mazeSolved == true)
+                        //switch stack & go back through the maze
+                           //create case statements
+                              //look at powerpoint
+                              //case 0 = ...
+                              //1 should be turned to 2 and vice versa
+                        //1 and 2 will mean the opposite of what they meant when we were going through the maze from start to finish
+                     //else if (mazeSolved = false)
+                        //go through intersection code (red color)
+                     
+                     
+                   }
+                   
 						 else {
 							 System.out.println (hsv[0]);
 						 }
@@ -151,7 +186,8 @@ public class MazeSolver {
 							 
 	                     //ir code activated
 	      					distanceir.fetchSample(sampleir, 0);
-	      					if (sampleir[0]<=8) {
+	      					if (sampleir[0]<=20) {
+                                 //measured distance between edge of intersection square and wall => 20 cm
 	                              //do not turn
 	                              //put another statements saying if it's NOT activated
 	                              //if its  not activated then turn right over intersections
@@ -170,9 +206,50 @@ public class MazeSolver {
 	      					//attach stacks to the movements
 	      					//turn right = 2
 	      					//inside conditional
-	      					if (touched==true) {
-	      						//all combinations go here
-	      						touched=false;
+                        
+                        //what the #'s mean:
+                        //0 = go straight, 1 = turn left, 2 = turn right
+	      					if (touched = false) {
+                           //check IR ()
+                           if (sampleir[0]<=20) { // IR < 20
+                              pilot.forward();
+                              stack.push(0);
+                              //add 0 to the stack
+                           }
+                        }
+                        else if (touched==true) {
+                           touched = false;
+                              //touched is now assigned with false
+                           int x = stack.peek();
+                         
+                              //peek = tells you the top element in the stack
+                              //x is initialized outside out of the loop    
+                           
+                           //pop the top of the stack
+                           stack.pop();
+                           
+                           if (x == 0) {
+                              //turn right
+                              pilot.rotate(-90);
+                              //store as left (1) on stack
+                              stack.push(1);
+                           }
+                           else if (x == 2) {
+                              //check right
+                              if (sampleir[0]<=20) { // IR < 20
+                                 pilot.forward();
+                                 stack.push(0);
+                                 //add 0 to the stack
+                              }
+                              else {
+                                 //turn right
+                                 pilot.rotate(-90);
+                                 //store as straight (0) on stack
+                                 stack.push(0);
+                              }
+                           }
+                        }
+	      				   //all combinations are above (only 3 are relevant)
 	      					}
 	      					
 						 }
