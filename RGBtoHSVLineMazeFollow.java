@@ -93,8 +93,10 @@ import lejos.hardware.motor.*;
             //initialize the boolean touched variable to either true or false
             //does it matter which?
             
-            int x;
+            
             //initializing variable x that will store the top of the stack
+            
+            
 			
             boolean mazeSolved = false;
 			
@@ -117,7 +119,7 @@ import lejos.hardware.motor.*;
 							//debug to see if it ends up on the correct side of the line
 						}
 					
-					//Delay.msDelay(100);
+					//Delay.msDelay(200);
 					
 					//make the middle range smaller?
 				
@@ -143,10 +145,85 @@ import lejos.hardware.motor.*;
 						 System.out.println (hsv[0]);
 						 
 					 }
-				
+					//need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
+					 else if ((hsv[0]>0)&&(hsv[0]<10)) {
+						 
+						 System.out.println("red intersection");
+						 if (touched != true) {
+		                     //ir code activated
+		      					distanceir.fetchSample(sampleir, 0);
+		      					if (sampleir[0]<=20) {
+	                                 //measured distance between edge of intersection square and wall => 20 cm
+		                              //do not turn
+		                              //put another statements saying if it's NOT activated
+		                              //if its  not activated then turn right over intersections
+		      						//travels back on to the line when it travels 5
+		                            pilot.travel(5);
+		                            stack.push(0);
+		      					}  
+		      					//attach stacks to the movements
+		      					//straight = 0;
+		      					//inside conditional
+		      					
+		      					// rotates to the right if the right is clear
+			                     else {
+			                    	 	pilot.travel(3);
+			                            pilot.rotate(-60);
+			                            pilot.travel(2);
+			                            stack.push(1);
+			                     }	
+		      					//attach stacks to the movements
+		      					//turn right = 2
+		      					//inside conditional
+	                        
+	                        //what the #'s mean:
+	                        //0 = go straight, 1 = turn left, 2 = turn right
+		      					//if (touched = false) { DELETE
+	                           //check IR ()
+	                           /*if (sampleir[0]<=20) { // IR < 20
+	                              pilot.forward();
+	                              stack.push(0);
+	                              //add 0 to the stack
+	                           }*/
+		      					
+		      					
+	                    
+						 }
+						 else if (touched==true) {
+	                           touched = false;
+	                              //touched is now assigned with false
+	                         
+	                              //peek = tells you the top element in the stack
+	                              //x is initialized outside out of the loop    
+	                           
+	                           //pop the top of the stack
+	                           stack.pop();
+	                           
+	                           if (stack.peek() == 0) {
+	                              //turn right
+	                              pilot.rotate(-60);
+	                              //store as left (1) on stack
+	                              stack.push(1);
+	                           }
+	                           else if (stack.peek() == 2) {
+	                              //check right
+	                              if (sampleir[0]<=20) { // IR < 20
+	                                 pilot.forward();
+	                                 stack.push(0);
+	                                 //add 0 to the stack
+	                              }
+	                              else {
+	                                 //turn right
+	                                 pilot.rotate(-60);
+	                                 //store as straight (0) on stack
+	                                 stack.push(0);
+	                              }
+	                           }
+	                        }
+					 }
 					 
 					//SILVER fix the colors
-	                   else if ((hsv[0]>81)&&(hsv[0]<90)||(hsv[0]>106)&&(hsv[0]<=118)) { 
+	                   else if (((hsv[0]>81)&&(hsv[0]<90))||((hsv[0]>106)&&(hsv[0]<=118))) { 
 	                	   
 	                	   System.out.println("Silver detected turn around");
 	                	   mazeSolved = true;
@@ -182,8 +259,25 @@ import lejos.hardware.motor.*;
 	  					 }
 	  					 else if ((hsv[0]>=0)&&(hsv[0]<10)) { 
 	                	   //red is detected
-	  						 	pilot.travel(4);
-	                	   		stack.pop();
+	  						 	pilot.travel(3);
+	  						 	//forward
+	                	   		if (stack.peek()==0) {
+	                	   			pilot.travel(5);
+	                	   			stack.pop();
+	                	   		}
+	                	   		//left
+	                	   		if (stack.peek()==1) {
+	                	   			pilot.travel(3);
+		                            pilot.rotate(60);
+		                            pilot.travel(2);
+		                            stack.pop();
+	                	   		}
+	                	   		if (stack.peek()==2) {
+	                	   			pilot.travel(3);
+		                            pilot.rotate(-60);
+		                            pilot.travel(2);
+		                            stack.pop();
+	                	   		}
 	  					}
 							
 	               } 	   
@@ -210,79 +304,8 @@ import lejos.hardware.motor.*;
 	                     
 	                     		
 					 
-					 //need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
-					 else if ((hsv[0]>=0)&&(hsv[0]<10)) {
-						 
-						 System.out.println("red intersection");
-						 if (touched = false) {
-		                     //ir code activated
-		      					distanceir.fetchSample(sampleir, 0);
-		      					if (sampleir[0]<=20) {
-	                                 //measured distance between edge of intersection square and wall => 20 cm
-		                              //do not turn
-		                              //put another statements saying if it's NOT activated
-		                              //if its  not activated then turn right over intersections
-		      						  //travels back on to the line when it travels 5
-		                            pilot.travel(5);
-		      					}  
-		      					//attach stacks to the movements
-		      					//straight = 0;
-		      					//inside conditional
-		      					
-		      					// rotates to the right if the right is clear
-			                     else {
-			                    	 	pilot.travel(3);
-			                            pilot.rotate(-80);
-			                            pilot.travel(3);
-			                     }	
-		      					//attach stacks to the movements
-		      					//turn right = 2
-		      					//inside conditional
-	                        
-	                        //what the #'s mean:
-	                        //0 = go straight, 1 = turn left, 2 = turn right
-		      					//if (touched = false) { DELETE
-	                           //check IR ()
-	                           if (sampleir[0]<=20) { // IR < 20
-	                              pilot.forward();
-	                              stack.push(0);
-	                              //add 0 to the stack
-	                           }
-						 }
-						 else if (touched==true) {
-	                           touched = false;
-	                              //touched is now assigned with false
-	                           x = stack.peek();
-	                         
-	                              //peek = tells you the top element in the stack
-	                              //x is initialized outside out of the loop    
-	                           
-	                           //pop the top of the stack
-	                           stack.pop();
-	                           
-	                           if (x == 0) {
-	                              //turn right
-	                              pilot.rotate(-90);
-	                              //store as left (1) on stack
-	                              stack.push(1);
-	                           }
-	                           else if (x == 2) {
-	                              //check right
-	                              if (sampleir[0]<=20) { // IR < 20
-	                                 pilot.forward();
-	                                 stack.push(0);
-	                                 //add 0 to the stack
-	                              }
-	                              else {
-	                                 //turn right
-	                                 pilot.rotate(-90);
-	                                 //store as straight (0) on stack
-	                                 stack.push(0);
-	                              }
-	                           }
-	                        }
+					 
 		      				   //all combinations are above (only 3 are relevant)
-		      			 }
 			                   
 						else {
 							System.out.println (hsv[0] + "correction");
