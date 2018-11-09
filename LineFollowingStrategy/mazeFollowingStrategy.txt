@@ -1,0 +1,11 @@
+
+
+Maze following strategy
+
+	- move ir sensor to the right of the robot**
+	- if the robot reaches an intersection and it can't turn right (aka the ir sensor 	is activated) then the robot goes straight
+	- if when the robot moves forward, then hits a wall
+	  --go back and turn around 180*
+	  --when it sees the intersection again, turn right
+
+	still confused with stacking methods and finishing the maze idea

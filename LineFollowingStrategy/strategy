@@ -1,0 +1,27 @@
+start of maze:
+	initialize sensors like before
+	pilot.forward();
+		with the methods for line following, touch, and ir implemented
+		these must be implemented together in order to complete the maze
+		each sequence stored in memory (stack) but only if that sequence is on the correct path that leads to solving the maze
+		
+question:
+when attempting to find whether it is a dead end, do we have the robot go right first then left or vice versa?
+	look at the pathway of the line and determine whether it would be more advantageous to turn left first or right
+	
+every sequence (wall/turn to wall/turn) is stored in the stack
+if that sequence contains a dead end (wall to wall)
+	remove that sequence from the stack
+	
+when the robot detects a wall using IR or touch (leaning towards IR)
+	turn one direction and move forward in order to detect whether there is a wall on that side
+		if there is a wall
+			then do this for the other side
+		if both are walls, it is established that the robot is at a dead end
+			that sequence is removed from the stack
+			
+end of maze:
+robot stops (and stops adding to the stack) when the robot senses that it is above the tin voil
+	we need to add in the color of the tin foil to our color sensor
+then the robot goes back through the maze according to the stack
+	this should be without errors like dead ends
