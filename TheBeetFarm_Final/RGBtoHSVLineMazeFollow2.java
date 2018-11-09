@@ -1,13 +1,13 @@
-import java.util.Stack;
+   import java.util.Stack;
 	import lejos.hardware.Button;
 	import lejos.robotics.Color;
 	import lejos.utility.Delay;
 	import lejos.hardware.port.*;
 	import lejos.hardware.Sound;
-import lejos.hardware.sensor.EV3IRSensor;
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.SensorMode;
-import lejos.hardware.motor.*;
+   import lejos.hardware.sensor.EV3IRSensor;
+   import lejos.hardware.sensor.EV3TouchSensor;
+   import lejos.hardware.sensor.SensorMode;
+   import lejos.hardware.motor.*;
 	import lejos.robotics.SampleProvider;
 	import  lejos.robotics.chassis.Chassis; 
 	import  lejos.robotics.chassis.Wheel; 
@@ -59,11 +59,13 @@ import lejos.hardware.motor.*;
 			colorSensor.setRGBMode();
 			Color rgb; 
 			
+         //importing the sensors and their ports
 			EV3LargeRegulatedMotor motora = new EV3LargeRegulatedMotor (MotorPort.A);
 			EV3LargeRegulatedMotor motorb = new EV3LargeRegulatedMotor (MotorPort.C);
 			EV3TouchSensor touchsensor = new EV3TouchSensor (SensorPort.S2);
 			EV3IRSensor irSensor = new EV3IRSensor (SensorPort.S1);
 			
+         //setting the offsets
 			Wheel wheel1 = WheeledChassis.modelWheel(motora , 2.5).offset(-5.0);
 		    Wheel wheel2 = WheeledChassis.modelWheel(motorb , 2.5).offset(5.0);
 		    
@@ -82,25 +84,20 @@ import lejos.hardware.motor.*;
 		    
 		    Button.waitForAnyPress(); 
 		    
-		    
+		    //create a new array with the 3 HSV values
 			double [] hsv = new double[3];
 			
+         //created a new stack called stack
+         //used later at intersections
 			Stack<Integer> stack = new Stack<Integer>();
-            //created a new stack called stack
-            //used later at intersections
-            
+         
+            //initialize the boolean touched variable to false
             boolean touched = false; 
-            //check this later
-            //initialize the boolean touched variable to either true or false
-            //does it matter which?
             
-            
-            //initializing variable x that will store the top of the stack
-            
-            
-			
+            //maze starts off as not solved
             boolean mazeSolved = false;
             
+            //initialize the top of the stack (stack peek)
             int topStack;
             
             
@@ -112,22 +109,19 @@ import lejos.hardware.motor.*;
 				hsv= RGBtoHSV(rgb);
 				distancetouch.fetchSample(sampletouch, 0);
 				
-            	if(mazeSolved == false) {//System.out.println ("starting while loop");
+            	if(mazeSolved == false) {
 					System.out.println("maze not solved");
 					System.out.println(hsv[0]);
 					if (sampletouch[0]== 1) {
 						
+                  //if it touches then the robot turns around at the dead ends
 						touched = true;
 						pilot.travel(-5);
 						pilot.rotate(-160);
 						pilot.travel(5);							
-						//debug to see if it ends up on the correct side of the line
 					}
-					
-					
-					//touch sensor code
-					 
-					//need to implement when the robot sees a new color (red) then it with turn or do as it is called to to
+                 
+                //if the robot sees red then it will either turn right or move forward and stack values respectfuly
 					 if ((hsv[0]>0)&&(hsv[0]<10)) {
 						 
 						 System.out.println("red intersection");
@@ -138,7 +132,6 @@ import lejos.hardware.motor.*;
 		      					if (sampleir[0]<=20) {
 	                                 //measured distance between edge of intersection square and wall => 20 cm
 		                              //do not turn
-		                              //put another statements saying if it's NOT activated
 		                              //if its  not activated then turn right over intersections
 		      						//travels back on to the line when it travels 5
 		                            pilot.travel(5);
@@ -158,19 +151,7 @@ import lejos.hardware.motor.*;
 		      					//attach stacks to the movements
 		      					//turn right = 2
 		      					//inside conditional
-	                        
-	                        //what the #'s mean:
-	                        //0 = go straight, 1 = turn left, 2 = turn right
-		      					//if (touched = false) { DELETE
-	                           //check IR ()
-	                           //if (sampleir[0]<=20) { // IR < 20
-	                             // pilot.forward();
-	                              //stack.push(0);
-	                              //add 0 to the stack
-	                           //}
 		      					
-		      					
-	                    
 						 }
 						 else if (touched==true) {
 	                           touched = false;
@@ -182,8 +163,7 @@ import lejos.hardware.motor.*;
 	                        	   
 	                              //touched is now assigned with false
 	                         
-	                              //peek = tells you the top element in the stack
-	                              //x is initialized outside out of the loop    
+	                              //peek = tells you the top element in the stack 
 	                           
 	                           //pop the top of the stack
 	                           stack.pop();
@@ -216,7 +196,7 @@ import lejos.hardware.motor.*;
 	                        }
 					 }
 					 
-					//SILVER fix the colors
+					//if the robot sees silver then maze solved is true and we begin poping off the stack 
 	                   else if (((hsv[0]>81)&&(hsv[0]<90))||((hsv[0]>106)&&(hsv[0]<=118))) { 
 	                	   
 	                	   System.out.println("Silver detected turn around");
