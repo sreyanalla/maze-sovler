@@ -1,4 +1,4 @@
-   import java.util.Stack;
+ import java.util.Stack;
 	import lejos.hardware.Button;
 	import lejos.robotics.Color;
 	import lejos.utility.Delay;
@@ -160,6 +160,10 @@
 	                        	   stack.push(2);
 	                        	   pilot.rotate(60);
 	                           }
+                              
+                              else if (!stack.isEmpty()) {
+	                        	   stack.pop();
+                              }
 	                        	   
 	                              //touched is now assigned with false
 	                         
@@ -330,5 +334,4 @@
 	}
 }
 	
-
 
